@@ -59,12 +59,12 @@ describe("GET /todos", () => {
 
 describe("POST /todos", () => {
     test("should respond with a 200 status code", async () => {
-        const response = await request(app.callback()).get(baseUrl)
+        const response = await request(app.callback()).post(baseUrl).send({title: "Todo1"})
         expect(response.statusCode).toBe(200)
     })
 
     test("should respond with JSON", async () => {
-        const response = await request(app.callback()).get(baseUrl)
+        const response = await request(app.callback()).post(baseUrl).send({title: "Todo1"})
         expect(response.type).toBe("application/json")
         //throw new Error("Not yet implemented")
     })
@@ -72,9 +72,8 @@ describe("POST /todos", () => {
     test("should respond with list of existing todos", async () => {
         const todo1 = {title: "Todo1"}
 
-        await getDB().collection("todos").findOne(todo1)
-
-        const response = await request(app.callback()).get(baseUrl)
-        expect(response.body).toMatchObject([todo1, todo2])
+        const response = await request(app.callback()).post(baseUrl).send(todo1)
+        const actualtodo = await getDB().collection("todos").findOne(todo1)
+        expect(actualtodo).toMatchObject(todo1)
     })
 })
